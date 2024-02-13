@@ -1,50 +1,41 @@
-# Задача 1: Фабрика функций
-def create_operation(operation):
-    if operation == "multiplication":
-        def multiplication(x, y):
-            return x * y
-        return multiplication
-    elif operation == "division":
-        def division(x, y):
-            return x / y
-        return division
+# Задание:
+# Напишите 2 функции:
+# Функция которая складывает 3 числа (sum_three)
+# Функция декоратор (is_prime), которая распечатывает "Простое",
+# если результат 1ой функции будет простым числом и "Составное" в противном случае.
 
-
-my_func_multiplication = create_operation("multiplication")
-print(my_func_multiplication(3, 2))
-
-try:
-    my_func_division = create_operation("division")
-    print(my_func_division(18, 9))
-
-    my_func_division = create_operation("division")
-    print(my_func_division(18, 0))
-except ZeroDivisionError as exc:
-    print('Error:', exc)
+# Примечание:
+# Не забудьте написать внутреннюю функцию wrapper в is_prime
+# Функция is_prime должна возвращать wrapper
+# @is_prime - декоратор для функции sum_three
 
 
 
+def is_prime(func):
+    def wrapper(*args, **kwargs):
+        result = func(*args, **kwargs)
+        d = 2
+        while result % d != 0:
+            d += 1
+        if d == result:
+            print("Простое")
+        else:
+            print("Составное")
+        return result
+    return wrapper
 
-# Задача 2 лямбда
-multiply = lambda x: x ** 2
-print(multiply(4))
+@is_prime
+def sum_three(*args):
+    total = sum(args)
+    return total
 
-def multiply_def(x):
-   return x ** 2
-print(multiply_def(4))
+result = sum_three(2, 3, 6)
+print(result)
+
+# Консоль:
+# Простое
+# 11
 
 
 
 
-
-# Задача 3: Вызываемые oбъекты
-class Rect:
-
-   def __init__(self, a, b):
-       self.a = a
-       self.b = b
-   def __call__(self):
-       return f'Стороны: {self.a}, {self.b} \nПлощадь: {self.a * self.b}'
-
-area_of_a_rectangle = Rect(2, 4)
-print(area_of_a_rectangle())
