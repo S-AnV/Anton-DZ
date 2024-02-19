@@ -1,40 +1,54 @@
 # Задание:
-# Напишите 2 функции:
-# Функция которая складывает 3 числа (sum_three)
-# Функция декоратор (is_prime), которая распечатывает "Простое",
-# если результат 1ой функции будет простым числом и "Составное" в противном случае.
-
-# Примечание:
-# Не забудьте написать внутреннюю функцию wrapper в is_prime
-# Функция is_prime должна возвращать wrapper
-# @is_prime - декоратор для функции sum_three
+# Напишите программу, которая создает два потока.
+# Первый поток должен выводить числа от 1 до 10 с интервалом в 1 секунду.
+# Второй поток должен выводить буквы от 'a' до 'j' с тем же интервалом.
+# Оба потока должны работать параллельно.
 
 
+import time
+from threading import Thread
 
-def is_prime(func):
-    def wrapper(*args, **kwargs):
-        result = func(*args, **kwargs)
-        d = 2
-        while result % d != 0:
-            d += 1
-        if d == result:
-            print("Простое")
-        else:
-            print("Составное")
-        return result
-    return wrapper
+numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
+def subsequence(variable):
+    for index in variable:
+        print(index, flush=True)
+        time.sleep(1)
 
-@is_prime
-def sum_three(*args):
-    total = sum(args)
-    return total
+thread = Thread(target=subsequence, kwargs=dict(variable=numbers))
+thread.start()
 
-result = sum_three(2, 3, 6)
-print(result)
+subsequence(variable=letters)
 
-# Консоль:
-# Простое
-# 11
+thread.join()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
