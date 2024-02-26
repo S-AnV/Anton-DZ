@@ -1,49 +1,105 @@
-# Задание:
-# Реализуйте программу, которая имитирует доступ к общему ресурсу с использованием механизма блокировки потоков.
-
-# Класс BankAccount должен отражать банковский счет с балансом и методами для пополнения и снятия денег.
-# Необходимо использовать механизм блокировки, чтобы избежать проблемы гонок (race conditions)
-# при модификации общего ресурса.
-
-# Примечание:
-# Используйте класс Lock из модуля threading для блокировки доступа к общему ресурсу.
-# Ожидается создание двух потоков, один для пополнения счета, другой для снятия денег.
-# Используйте with (lock object): в начале каждого метода, чтобы использовать блокировку
-
+import time
+from collections import defaultdict
+import queue
+import random
 import threading
 
-class BankAccount():
-
-    def __init__(self):
-        self.balance = 1000
-        self.balance_lock = threading.Lock()
-
-    def deposit(self, num):
-        with self.balance_lock:
-            self.balance += num
-        print(f'Deposited {num}, new balance is {self.balance}')
-
-    def withdraw(self, num):
-        with self.balance_lock:
-            self.balance -= num
-        print(f'Withdrew {num}, new balance is {self.balance}')
+class Table(threading.Thread):
+    def __init__(self, number, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.number = number
+        self.is_busy = True
 
 
-def deposit_task(account, amount):
-    for _ in range(5):
-        account.deposit(amount)
 
-def withdraw_task(account, amount):
-    for _ in range(5):
-        account.withdraw(amount)
+class Cafe(threading.Thread):
+    def __init__(self, tables, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.customers = queue.Queue() # очередь посетителей
+        self.tables = tables # список столов (поступает из вне)
 
-account = BankAccount()
+    def customer_arrival(self): # моделирует приход посетителя(каждую секунду)
+        for customer in range(1, 21):
+            print(f'Посетитель номер {customer} прибыл', flush=True)
+            self.customer_arrival()
+            time.sleep(1)
 
-deposit_thread = threading.Thread(target=deposit_task, args=(account, 100))
-withdraw_thread = threading.Thread(target=withdraw_task, args=(account, 150))
+    def serve_customer(self, customer): # моделирует обслуживание посетителя
+# Проверяет наличие свободных столов, в случае наличия стола - начинает обслуживание посетителя (запуск потока),
+# в противном случае - посетитель поступает в очередь. Время обслуживания 5 секунд.
+        if table1.is_busy:
+            self.customers.full(customer)
+        else:
+            print(f'Посетитель номер {customer} сел за стол {table1.number}.', flush=True)
 
-deposit_thread.start()
-withdraw_thread.start()
+        # else:
 
-deposit_thread.join()
-withdraw_thread.join()
+
+            # if self.customers.put(customer):
+            #     print(f'Посетитель номер {customer} сел за стол {table1}.', flush=True)
+            # self.customers.full(customer)
+            # print(f'Посетитель номер {customer} ожидает свободный стол.', flush=True)
+
+
+
+
+# class Customer: # класс (поток) посетителя. Запускается, если есть свободные столы.
+
+
+
+# Так же должны выводиться текстовые сообщения соответствующие событиям:
+# Посетитель номер <номер посетителя> прибыл.
+# Посетитель номер <номер посетителя> сел за стол <номер стола>. (начало обслуживания)
+# Посетитель номер <номер посетителя> покушал и ушёл. (конец обслуживания)
+# Посетитель номер <номер посетителя> ожидает свободный стол. (помещение в очередь)
+
+
+# Пример работы:
+# Создаем столики в кафе
+table1 = Table(1)
+table2 = Table(2)
+table3 = Table(3)
+tables = [table1, table2, table3]
+
+# Инициализируем кафе
+cafe = Cafe(tables)
+
+# Запускаем поток для прибытия посетителей
+customer_arrival_thread = threading.Thread(target=cafe.customer_arrival)
+customer_arrival_thread.start()
+
+# Ожидаем завершения работы прибытия посетителей
+customer_arrival_thread.join()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
