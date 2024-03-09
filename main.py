@@ -1,105 +1,42 @@
-import time
-from collections import defaultdict
-import queue
-import random
-import threading
-
-class Table(threading.Thread):
-    def __init__(self, number, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.number = number
-        self.is_busy = True
+from multiprocessing import Process, Manager, Pipe, Queue
 
 
+class WarehouseManager:
+    def __init__(self, manager):
+        self.data = manager.dict()
 
-class Cafe(threading.Thread):
-    def __init__(self, tables, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.customers = queue.Queue() # очередь посетителей
-        self.tables = tables # список столов (поступает из вне)
-
-    def customer_arrival(self): # моделирует приход посетителя(каждую секунду)
-        for customer in range(1, 21):
-            print(f'Посетитель номер {customer} прибыл', flush=True)
-            self.customer_arrival()
-            time.sleep(1)
-
-    def serve_customer(self, customer): # моделирует обслуживание посетителя
-# Проверяет наличие свободных столов, в случае наличия стола - начинает обслуживание посетителя (запуск потока),
-# в противном случае - посетитель поступает в очередь. Время обслуживания 5 секунд.
-        if table1.is_busy:
-            self.customers.full(customer)
-        else:
-            print(f'Посетитель номер {customer} сел за стол {table1.number}.', flush=True)
-
-        # else:
+    def process_request(self, request):
+        if request[1] == 'receipt':
+            self.data[request[0]] = request[2]
+        elif request[1] == 'shipment':
+            if request[2] > 0:
+                self.data[request[0]] -= request[2]
+            else:
+                self.run(requests)
 
 
-            # if self.customers.put(customer):
-            #     print(f'Посетитель номер {customer} сел за стол {table1}.', flush=True)
-            # self.customers.full(customer)
-            # print(f'Посетитель номер {customer} ожидает свободный стол.', flush=True)
+    def run(self, requests):
+        processes = []
+        for request in requests:
+            p = Process(target=self.process_request, args=(request,))
+            processes.append(p)
+            p.start()
+
+        for p in processes:
+            p.join()
 
 
+if __name__ == '__main__':
+    with Manager() as manager:
+        manager = WarehouseManager(manager)
 
+        requests = [
+            ("product1", "receipt", 100),
+            ("product2", "receipt", 150),
+            ("product1", "shipment", 30),
+            ("product3", "receipt", 200),
+            ("product2", "shipment", 50)
+        ]
 
-# class Customer: # класс (поток) посетителя. Запускается, если есть свободные столы.
-
-
-
-# Так же должны выводиться текстовые сообщения соответствующие событиям:
-# Посетитель номер <номер посетителя> прибыл.
-# Посетитель номер <номер посетителя> сел за стол <номер стола>. (начало обслуживания)
-# Посетитель номер <номер посетителя> покушал и ушёл. (конец обслуживания)
-# Посетитель номер <номер посетителя> ожидает свободный стол. (помещение в очередь)
-
-
-# Пример работы:
-# Создаем столики в кафе
-table1 = Table(1)
-table2 = Table(2)
-table3 = Table(3)
-tables = [table1, table2, table3]
-
-# Инициализируем кафе
-cafe = Cafe(tables)
-
-# Запускаем поток для прибытия посетителей
-customer_arrival_thread = threading.Thread(target=cafe.customer_arrival)
-customer_arrival_thread.start()
-
-# Ожидаем завершения работы прибытия посетителей
-customer_arrival_thread.join()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        manager.run(requests)
+        print(dict(manager.data))
