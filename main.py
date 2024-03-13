@@ -1,42 +1,20 @@
-from multiprocessing import Process, Manager, Pipe, Queue
+import inspect
 
 
-class WarehouseManager:
-    def __init__(self, manager):
-        self.data = manager.dict()
-
-    def process_request(self, request):
-        if request[1] == 'receipt':
-            self.data[request[0]] = request[2]
-        elif request[1] == 'shipment':
-            if request[2] > 0:
-                self.data[request[0]] -= request[2]
-            else:
-                self.run(requests)
+def introspection_info(obj):
+    return obj
 
 
-    def run(self, requests):
-        processes = []
-        for request in requests:
-            p = Process(target=self.process_request, args=(request,))
-            processes.append(p)
-            p.start()
+number_info = introspection_info(42)
+print(number_info)
 
-        for p in processes:
-            p.join()
+some_function_module = inspect.getmodule(introspection_info)
 
+info = {'type': type(number_info),
+        'attributes': dir(number_info),
+        'module': some_function_module.__name__}
+print(info)
 
-if __name__ == '__main__':
-    with Manager() as manager:
-        manager = WarehouseManager(manager)
-
-        requests = [
-            ("product1", "receipt", 100),
-            ("product2", "receipt", 150),
-            ("product1", "shipment", 30),
-            ("product3", "receipt", 200),
-            ("product2", "shipment", 50)
-        ]
-
-        manager.run(requests)
-        print(dict(manager.data))
+for attr_name in dir(number_info):
+    attr = getattr(number_info, attr_name)
+    print(attr_name, type(attr))
