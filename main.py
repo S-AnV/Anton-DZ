@@ -3,6 +3,7 @@ import unittest
 from HumanMove import Student
 
 class HumanMoveTest(unittest.TestCase):
+
     def test_normal_1(self):
         result_1 = Student('Andrey')
         for i in range(10):
