@@ -1,20 +1,25 @@
-import inspect
+import unittest
+
+from HumanMove import Student
+
+class HumanMoveTest(unittest.TestCase):
+    def test_normal_1(self):
+        result_1 = Student('Andrey')
+        for i in range(10):
+            result_1.walk()
+        self.assertEqual(result_1.distance, 50, 'Дистанции не равны [дистанция человека(Andrey)] != 500')
+        return result_1.distance
+
+    def test_normal_2(self):
+        result_2 = Student('Petr')
+        for i in range(10):
+            result_2.run()
+        self.assertEqual(result_2.distance, 100, 'Дистанции не равны [дистанция человека(Petr)] != 1000')
+        return result_2.distance
 
 
-def introspection_info(obj):
-    return obj
+    def test_normal_3(self):
+        self.assertLess(self.test_normal_1(), self.test_normal_2(), 'Petr должен преодолеть дистанцию больше, чем Andrey')
 
-
-number_info = introspection_info(42)
-print(number_info)
-
-some_function_module = inspect.getmodule(introspection_info)
-
-info = {'type': type(number_info),
-        'attributes': dir(number_info),
-        'module': some_function_module.__name__}
-print(info)
-
-for attr_name in dir(number_info):
-    attr = getattr(number_info, attr_name)
-    print(attr_name, type(attr))
+if __name__ == '__main__':
+    unittest.main()
