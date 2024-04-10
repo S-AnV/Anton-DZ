@@ -1,43 +1,17 @@
-from datetime import datetime
+import re
+
+def extract_image_links(html_text):
+    pattern = r"\s*https?://[\w./]+.[e-p]{3,4}\s*"
+    string = re.findall(pattern, html_text)
+    return string
 
 
-class SuperDate(datetime):
+sample_html = ("<img src='https://example.com/image1.jpg'> <img src='http://example.com/image2.png'> "
+               "<img src='https://example.com/image3.gif'>")
 
-    def get_season(self):
-        """
-        возвращает сезон года (Summer, Autumn, Winter, Spring)
-        :return:
-        """
-        if 3 <= self.month <= 5:
-            return 'Spring'
-        elif 6 <= self.month <= 8:
-            return 'Summer'
-        elif 9 <= self.month <= 11:
-            return 'Autumn'
-        else:
-            return 'Winter'
-
-
-    def get_time_of_day(self):
-        """
-        возвращает время суток (Morning: 6-12; Day: 12-18, Evening: 18-0, Night: 0-6)
-        :return:
-        """
-        if 6 <= self.hour <= 11:
-            return 'Morning'
-        elif 12 <= self.hour <= 17:
-            return 'Day'
-        elif 18 <= self.hour <= 23:
-            return 'Evening'
-        elif 0 <= self.hour <= 5:
-            return 'Night'
-
-
-
-a = SuperDate(2024, 2, 22, 12)
-print(a.get_season())
-print(a.get_time_of_day())
-
-
-
-
+image_links = extract_image_links(sample_html)
+if image_links:
+  for image_link in image_links:
+    print(image_link)
+else:
+  print("Нет ссылок с картинками в HTML тексте.")
