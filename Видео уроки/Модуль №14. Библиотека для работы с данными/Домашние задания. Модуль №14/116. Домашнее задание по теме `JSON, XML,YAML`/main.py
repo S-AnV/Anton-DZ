@@ -7,10 +7,10 @@ def employees_rewrite(sort_type):
         try:
             if sort_type == 'salary':
                 sorted_key = {'employees': sorted(number_of_users, key=lambda x: x[sort_type], reverse=True)}
-            else:
+            elif sort_type == 'firstName' or 'lastName' or 'department':
                 sorted_key = {'employees': sorted(number_of_users, key=lambda x: x[sort_type])}
-        except:
-            ValueError('Bad key for sorting')
+        except Exception:
+            raise ValueError('Bad key for sorting')
 
 
     # print(sorted_firstName)
@@ -28,4 +28,4 @@ def employees_rewrite(sort_type):
         with open('employees_salary_sorted.json', 'w') as json_file:
             json.dump(sorted_key, json_file, indent=4)
 
-employees_rewrite('salary')
+employees_rewrite('department')
