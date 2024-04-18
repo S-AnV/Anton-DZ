@@ -28,4 +28,4 @@ def employees_rewrite(sort_type):
         with open('employees_salary_sorted.json', 'w') as json_file:
             json.dump(sorted_key, json_file, indent=4)
 
-employees_rewrite('department')
+employees_rewrite('salary')
